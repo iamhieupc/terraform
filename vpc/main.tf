@@ -14,13 +14,11 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-
-
 # 3. create RouteTable
 resource "aws_route_table" "public-route-to-igw" {
   vpc_id = aws_vpc.vpc.id
 
-  tags = { 
+  tags = {
     Name = "Public Routing Table"
   }
 }
@@ -40,7 +38,7 @@ resource "aws_route" "public_subnet_internet_gateway_ipv6" {
 
 # 4. create Subnet
 resource "aws_subnet" "public_subnet1" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id     = aws_vpc.vpc.id
   cidr_block = "10.0.1.0/24"
   tags = {
     Name = "public_subnet1"
@@ -48,7 +46,7 @@ resource "aws_subnet" "public_subnet1" {
 }
 
 resource "aws_subnet" "private_subnet1" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id     = aws_vpc.vpc.id
   cidr_block = "10.0.2.0/24"
   tags = {
     Name = "private_subnet1"
@@ -56,7 +54,7 @@ resource "aws_subnet" "private_subnet1" {
 }
 
 resource "aws_subnet" "public_subnet2" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id     = aws_vpc.vpc.id
   cidr_block = "10.0.3.0/24"
   tags = {
     Name = "public_subnet2"
@@ -64,7 +62,7 @@ resource "aws_subnet" "public_subnet2" {
 }
 
 resource "aws_subnet" "private_subnet2" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id     = aws_vpc.vpc.id
   cidr_block = "10.0.4.0/24"
   tags = {
     Name = "private_subnet2"
@@ -83,7 +81,7 @@ resource "aws_nat_gateway" "nat_AZ1" {
 
   depends_on = [aws_internet_gateway.igw]
 
-  tags = { 
+  tags = {
     Name = "First AZ NAT Gateway"
   }
 }
@@ -108,17 +106,17 @@ resource "aws_security_group" "forwarder" {
 
   ingress {
     description = "ssh"
-    from_port = 22
-    protocol = "tcp"
-    to_port = 22
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-   ingress {
+  ingress {
     description = "http"
-    from_port = 80
-    protocol = "tcp"
-    to_port = 80
+    from_port   = 80
+    protocol    = "tcp"
+    to_port     = 80
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -142,12 +140,12 @@ data "aws_ami" "amazon-linux-2" {
 
 # 8. Create ec2
 resource "aws_instance" "instance" {
-  subnet_id     = aws_subnet.public_subnet1.id
-  ami           = "ami-06df38320cecdd700"
-  instance_type = "t2.micro"
-  key_name       = "deployer-key"
+  subnet_id                   = aws_subnet.public_subnet1.id
+  ami                         = "ami-06df38320cecdd700"
+  instance_type               = "t2.micro"
+  key_name                    = "deployer-key"
   associate_public_ip_address = true
-  vpc_security_group_ids = [aws_security_group.forwarder.id]
+  vpc_security_group_ids      = [aws_security_group.forwarder.id]
 }
 
 
